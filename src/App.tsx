@@ -1,11 +1,25 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
+
+const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/",
+    element: <DashboardPage />,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+]);
+
 const App = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold text-blue-600">
-        Tailwind CSS 적용 완료!
-      </h1>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;
