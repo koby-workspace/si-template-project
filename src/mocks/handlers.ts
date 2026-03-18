@@ -22,7 +22,7 @@ const fakeUsers: User[] = [
     email: "minjun.kim@example.com",
     role: "admin",
     status: "active",
-    createdAt: "2024-01-05",
+    createdAt: "2026-03-01",
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const fakeUsers: User[] = [
     email: "seoyeon.lee@example.com",
     role: "manager",
     status: "active",
-    createdAt: "2024-01-12",
+    createdAt: "2026-03-03",
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ const fakeUsers: User[] = [
     email: "jiho.park@example.com",
     role: "user",
     status: "active",
-    createdAt: "2024-02-03",
+    createdAt: "2026-03-05",
   },
   {
     id: 4,
@@ -46,7 +46,7 @@ const fakeUsers: User[] = [
     email: "sua.choi@example.com",
     role: "user",
     status: "inactive",
-    createdAt: "2024-02-14",
+    createdAt: "2026-03-07",
   },
   {
     id: 5,
@@ -54,7 +54,7 @@ const fakeUsers: User[] = [
     email: "woojin.jung@example.com",
     role: "user",
     status: "active",
-    createdAt: "2024-02-20",
+    createdAt: "2026-03-09",
   },
   {
     id: 6,
@@ -62,7 +62,7 @@ const fakeUsers: User[] = [
     email: "haeun.kang@example.com",
     role: "manager",
     status: "active",
-    createdAt: "2024-03-01",
+    createdAt: "2026-03-11",
   },
   {
     id: 7,
@@ -70,7 +70,7 @@ const fakeUsers: User[] = [
     email: "hyunwoo.jo@example.com",
     role: "user",
     status: "banned",
-    createdAt: "2024-03-07",
+    createdAt: "2026-03-13",
   },
   {
     id: 8,
@@ -78,7 +78,7 @@ const fakeUsers: User[] = [
     email: "jimin.yoon@example.com",
     role: "user",
     status: "active",
-    createdAt: "2024-03-15",
+    createdAt: "2026-03-15",
   },
   {
     id: 9,
@@ -86,7 +86,7 @@ const fakeUsers: User[] = [
     email: "chaewon.lim@example.com",
     role: "user",
     status: "active",
-    createdAt: "2024-04-02",
+    createdAt: "2026-03-17",
   },
   {
     id: 10,
@@ -94,7 +94,7 @@ const fakeUsers: User[] = [
     email: "sohee.han@example.com",
     role: "manager",
     status: "inactive",
-    createdAt: "2024-04-10",
+    createdAt: "2026-03-19",
   },
 ];
 
@@ -127,15 +127,41 @@ export const handlers = [
 
   // --- 회원 목록 조회 ---
   http.get("/api/users", ({ request }) => {
-    // URL에서 쿼리 파라미터 추출
-    // 예: /api/users?name=김 → name = '김'
     const url = new URL(request.url);
-    const name = url.searchParams.get("name") ?? "";
 
-    // 이름 검색 필터 적용
-    const filtered = name
-      ? fakeUsers.filter((u) => u.name.includes(name))
-      : fakeUsers;
+    // 검색 파라미터 추출
+    const keyword = url.searchParams.get("keyword") ?? "";
+    const role = url.searchParams.get("role") ?? "";
+    const status = url.searchParams.get("status") ?? "";
+    const startDate = url.searchParams.get("startDate") ?? "";
+    const endDate = url.searchParams.get("endDate") ?? "";
+
+    let filtered = [...fakeUsers];
+
+    // 검색어 필터: 이름 또는 이메일에 포함되는 경우
+    if (keyword) {
+      filtered = filtered.filter(
+        (u) => u.name.includes(keyword) || u.email.includes(keyword),
+      );
+    }
+
+    // 권한 필터
+    if (role) {
+      filtered = filtered.filter((u) => u.role === role);
+    }
+
+    // 상태 필터
+    if (status) {
+      filtered = filtered.filter((u) => u.status === status);
+    }
+
+    // 가입일자 범위 필터
+    if (startDate) {
+      filtered = filtered.filter((u) => u.createdAt >= startDate);
+    }
+    if (endDate) {
+      filtered = filtered.filter((u) => u.createdAt <= endDate);
+    }
 
     return HttpResponse.json({ data: filtered, total: filtered.length });
   }),
